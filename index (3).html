@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCRE Monitor — National Data Centre Resource Efficiency Registry | MeitY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --navy: #1a2744;
+  --navy-dark: #111b33;
+  --navy-light: #243560;
+  --white: #ffffff;
+  --gray-bg: #f0f2f5;
+  --gray-border: #d0d5dd;
+  --gray-mid: #8896ab;
+  --gray-dark: #4a5568;
+  --platinum: #1a2744;
+  --gold: #b8860b;
+  --silver: #708090;
+  --red: #c0392b;
+  --green: #1a6b3c;
+  --font: 'Source Sans 3', sans-serif;
+  --serif: 'Source Serif 4', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--gray-bg);
+  color: var(--navy);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* UTILITY BAR */
+.utility-bar {
+  background: var(--navy-dark);
+  color: #a0aec0;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid #0a1020;
+}
+.utility-bar .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.utility-bar a {
+  color: #a0aec0;
+  text-decoration: none;
+  margin-left: 16px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.utility-bar a:hover { color: #fff; }
+.official-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #8cba80;
+}
+.official-badge::before {
+  content: '🔒';
+  font-size: 10px;
+}
+
+/* AGENCY HEADER */
+.agency-header {
+  background: var(--navy);
+  color: white;
+  padding: 16px 0;
+  border-bottom: 3px solid #FF9933;
+}
+.agency-header .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.seal {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+.agency-text h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.agency-text p {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.header-right {
+  margin-left: auto;
+  text-align: right;
+}
+.header-right .site-title {
+  font-size: 13px;
+  color: #FF9933;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.header-right .registry-id {
+  font-size: 11px;
+  color: #6b7ea0;
+  margin-top: 2px;
+}
+
+/* NAV */
+nav {
+  background: var(--navy);
+  border-bottom: 1px solid #0f1e38;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+nav .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+}
+.nav-tab {
+  padding: 12px 20px;
+  color: #8896ab;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+.nav-tab:hover { color: #e2e8f0; }
+.nav-tab.active {
+  color: #fff;
+  border-bottom-color: #FF9933;
+}
+
+/* CONTENT */
+.content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* PAGE HEADERS */
+.page-header {
+  background: var(--navy);
+  color: white;
+  padding: 20px 0;
+  margin-bottom: 0;
+}
+.page-header .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+.page-header p {
+  color: #8896ab;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* STAT TILES */
+.stat-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  background: white;
+  border: 1px solid var(--gray-border);
+  border-radius: 0;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.stat-tile {
+  padding: 16px 20px;
+  border-right: 1px solid var(--gray-border);
+  text-align: center;
+}
+.stat-tile:last-child { border-right: none; }
+.stat-tile .num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-tile .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-dark);
+  font-weight: 600;
+}
+.stat-tile.total .num { color: var(--navy); }
+.stat-tile.platinum .num { color: var(--platinum); }
+.stat-tile.gold .num { color: var(--gold); }
+.stat-tile.silver .num { color: var(--silver); }
+.stat-tile.red .num { color: var(--red); }
+
+/* TABLE CONTROLS */
+.table-controls {
+  background: white;
+  border: 1px solid var(--gray-border);
+  border-bottom: none;
+  padding: 12px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.table-controls input[type=text] {
+  padding: 7px 12px;
+  border: 1px solid var(--gray-border);
+  font-family: var(--font);
+  font-size: 13px;
+  width: 220px;
+  color: var(--navy);
+}
+.table-controls select {
+  padding: 7px 10px;
+  border: 1px solid var(--gray-border);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--navy);
+  background: white;
+}
+.btn {
+  padding: 7px 16px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+.btn-primary {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+.btn-primary:hover { background: var(--navy-light); }
+.btn-secondary {
+  background: white;
+  color: var(--navy);
+  border-color: var(--gray-border);
+}
+.btn-secondary:hover { background: var(--gray-bg); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-green {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.btn-green:hover { background: #155c33; }
+
+/* DATA TABLE */
+.table-wrap {
+  background: white;
+  border: 1px solid var(--gray-border);
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  background: #f8f9fb;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--gray-border);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+th:hover { background: #eef0f4; }
+th.sort-asc::after { content: ' ▲'; font-size: 9px; }
+th.sort-desc::after { content: ' ▼'; font-size: 9px; }
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #edf0f4;
+  font-size: 13px;
+  vertical-align: top;
+}
+tr:hover > td { background: #f8f9fb; }
+tr.expanded > td { background: #f0f4fa; }
+
+/* TIER BADGES */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.badge-platinum { background: #e8ecf5; color: var(--platinum); border-color: #aab0c8; }
+.badge-gold { background: #fef8e7; color: var(--gold); border-color: #d4a81a; }
+.badge-silver { background: #f2f4f6; color: var(--silver); border-color: #9aa8b5; }
+.badge-red { background: #fdf0ee; color: var(--red); border-color: #e08070; }
+
+/* DETAIL PANEL */
+.detail-panel {
+  display: none;
+  background: #f0f4fa;
+  border-top: 2px solid var(--navy);
+  padding: 20px;
+}
+.detail-panel.open { display: block; }
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.detail-section h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-dark);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.sub-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.sub-score-label {
+  width: 180px;
+  font-size: 12px;
+  color: var(--gray-dark);
+  flex-shrink: 0;
+}
+.sub-score-bar-wrap {
+  flex: 1;
+  height: 16px;
+  background: #dde2ea;
+  position: relative;
+}
+.sub-score-bar {
+  height: 100%;
+  background: var(--navy);
+  transition: width 0.4s;
+}
+.sub-score-val {
+  width: 50px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* FORMS */
+.form-section {
+  background: white;
+  border: 1px solid var(--gray-border);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.form-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+}
+.form-section .subtitle {
+  font-size: 12px;
+  color: var(--gray-dark);
+  margin-bottom: 20px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group {
+  margin-bottom: 14px;
+}
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--gray-border);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--navy);
+  background: white;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: -2px;
+}
+.parsed-tag {
+  display: inline-block;
+  background: #e6f4ec;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  letter-spacing: 0.04em;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* RESULT PANEL */
+.result-panel {
+  background: var(--navy);
+  color: white;
+  padding: 24px;
+  position: sticky;
+  top: 64px;
+}
+.result-panel h3 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8896ab;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a3a5c;
+}
+.score-badge-big {
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 2px solid;
+}
+.score-badge-big .score-num {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--serif);
+}
+.score-badge-big .tier-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.formula-step {
+  background: #111b33;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-family: monospace;
+  border-left: 3px solid #FF9933;
+}
+.formula-step span { color: #FF9933; }
+
+/* CALCULATOR TABS */
+.calc-mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--gray-border);
+}
+.calc-mode-tab {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--gray-dark);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  user-select: none;
+}
+.calc-mode-tab.active {
+  color: var(--navy);
+  border-bottom-color: var(--navy);
+}
+.calc-mode-panel { display: none; }
+.calc-mode-panel.active { display: block; }
+
+/* UPLOAD ZONE */
+.upload-zone {
+  border: 2px dashed var(--gray-border);
+  padding: 40px;
+  text-align: center;
+  background: #f8f9fb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--navy);
+  background: #eef1f8;
+}
+.upload-zone .upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-zone p { color: var(--gray-dark); font-size: 13px; }
+.upload-zone strong { color: var(--navy); }
+
+/* MODELING TAB */
+.model-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+.slider-group {
+  margin-bottom: 18px;
+}
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.slider-group label span {
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+}
+input[type=range] {
+  width: 100%;
+  accent-color: var(--navy);
+}
+
+/* GAUGE */
+.gauge-wrap {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--gray-border);
+  margin-bottom: 20px;
+}
+.gauge-wrap h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-dark);
+  margin-bottom: 16px;
+}
+canvas#gaugeCanvas { display: block; margin: 0 auto; }
+
+/* SCENARIO TABLE */
+.scenario-table-wrap {
+  margin-top: 24px;
+  background: white;
+  border: 1px solid var(--gray-border);
+}
+.scenario-table-wrap h4 {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #f8f9fb;
+  border-bottom: 1px solid var(--gray-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* REPORTS TAB */
+.report-form {
+  background: white;
+  border: 1px solid var(--gray-border);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.report-form h3 {
+  font-size: 15px;
+  font-weight: 700;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 16px;
+}
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.download-card {
+  background: white;
+  border: 1px solid var(--gray-border);
+  padding: 20px;
+  text-align: center;
+}
+.download-card .dl-icon { font-size: 32px; margin-bottom: 10px; }
+.download-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.download-card p { font-size: 11px; color: var(--gray-dark); margin-bottom: 14px; }
+
+/* METHODOLOGY */
+.method-doc {
+  background: white;
+  border: 1px solid var(--gray-border);
+  padding: 40px;
+  max-width: 900px;
+}
+.method-doc .doc-header {
+  border-bottom: 3px double var(--navy);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+.method-doc .doc-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.method-doc .doc-meta {
+  font-size: 12px;
+  color: var(--gray-dark);
+  margin-top: 6px;
+}
+.accordion-item {
+  border: 1px solid var(--gray-border);
+  margin-bottom: 8px;
+}
+.accordion-header {
+  padding: 14px 20px;
+  background: #f8f9fb;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  user-select: none;
+}
+.accordion-header:hover { background: #edf0f6; }
+.accordion-header .acc-icon { font-size: 16px; transition: transform 0.2s; }
+.accordion-header.open .acc-icon { transform: rotate(180deg); }
+.accordion-body {
+  display: none;
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--gray-dark);
+}
+.accordion-body.open { display: block; }
+.accordion-body h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--navy);
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+.formula-block {
+  background: #f0f2f5;
+  border-left: 3px solid var(--navy);
+  padding: 10px 14px;
+  font-family: monospace;
+  font-size: 13px;
+  margin: 10px 0;
+  color: var(--navy);
+}
+
+/* TIER TABLE */
+.tier-ref-table th { cursor: default; }
+
+/* STATS PANEL */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+.stats-card {
+  background: white;
+  border: 1px solid var(--gray-border);
+  padding: 20px;
+}
+.stats-card h4 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-dark);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+/* PRINT STYLES */
+@media print {
+  .utility-bar, nav, .table-controls, .btn, .calc-mode-tabs { display: none !important; }
+  .print-report { display: block !important; }
+  body { background: white; }
+  .page-header { background: var(--navy) !important; print-color-adjust: exact; }
+}
+
+.print-report {
+  background: white;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.print-report .report-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.print-report table { font-size: 12px; }
+
+/* COMPARISON BARS */
+.cmp-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.cmp-label { width: 100px; font-size: 12px; flex-shrink: 0; }
+.cmp-bars { display: flex; gap: 4px; flex: 1; }
+.cmp-bar-item { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.cmp-bar-bg { height: 20px; background: #e8ecf4; position: relative; }
+.cmp-bar-fill { height: 100%; position: absolute; top: 0; left: 0; transition: width 0.4s; }
+.cmp-bar-fill.current { background: var(--navy); }
+.cmp-bar-fill.projected { background: #c8a951; }
+.cmp-bar-val { font-size: 10px; text-align: center; color: var(--gray-dark); }
+</style>
+</head>
+<body>
+
+<!-- INDIA TRICOLOUR STRIPE -->
+<div style="display:flex; height:5px;">
+  <div style="flex:1; background:#FF9933;"></div>
+  <div style="flex:1; background:#ffffff;"></div>
+  <div style="flex:1; background:#138808;"></div>
+</div>
+
+<!-- UTILITY BAR -->
+<div class="utility-bar">
+  <div class="inner">
+    <span class="official-badge">An Official Government of India Website</span>
+    <div>
+      <a href="#">Accessibility</a>
+      <a href="#">Contact MeitY</a>
+      <a href="#">Website Policies</a>
+    </div>
+  </div>
+</div>
+
+<!-- AGENCY HEADER -->
+<header class="agency-header">
+  <div class="inner">
+    <!-- Ashoka Pillar / Chakra inspired seal -->
+    <svg class="seal" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="30" r="28" fill="none" stroke="#FF9933" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="23" fill="none" stroke="#FF9933" stroke-width="0.5"/>
+      <!-- Ashoka Chakra simplified (24-spoke wheel) -->
+      <circle cx="30" cy="30" r="10" fill="none" stroke="#138808" stroke-width="1.2"/>
+      <circle cx="30" cy="30" r="3" fill="#138808"/>
+      <!-- 12 spokes -->
+      <line x1="30" y1="20" x2="30" y2="27" stroke="#138808" stroke-width="0.9"/>
+      <line x1="30" y1="33" x2="30" y2="40" stroke="#138808" stroke-width="0.9"/>
+      <line x1="20" y1="30" x2="27" y2="30" stroke="#138808" stroke-width="0.9"/>
+      <line x1="33" y1="30" x2="40" y2="30" stroke="#138808" stroke-width="0.9"/>
+      <line x1="22.9" y1="22.9" x2="27.9" y2="27.9" stroke="#138808" stroke-width="0.9"/>
+      <line x1="32.1" y1="32.1" x2="37.1" y2="37.1" stroke="#138808" stroke-width="0.9"/>
+      <line x1="37.1" y1="22.9" x2="32.1" y2="27.9" stroke="#138808" stroke-width="0.9"/>
+      <line x1="27.9" y1="32.1" x2="22.9" y2="37.1" stroke="#138808" stroke-width="0.9"/>
+      <line x1="21.5" y1="26" x2="27.5" y2="28.5" stroke="#138808" stroke-width="0.7"/>
+      <line x1="32.5" y1="31.5" x2="38.5" y2="34" stroke="#138808" stroke-width="0.7"/>
+      <line x1="34" y1="21.5" x2="31.5" y2="27.5" stroke="#138808" stroke-width="0.7"/>
+      <line x1="28.5" y1="32.5" x2="26" y2="38.5" stroke="#138808" stroke-width="0.7"/>
+      <!-- India tricolour accent bars -->
+      <rect x="14" y="50" width="32" height="3" fill="#FF9933"/>
+      <rect x="14" y="53" width="32" height="1.5" fill="#ffffff" opacity="0.6"/>
+      <rect x="14" y="54.5" width="32" height="3" fill="#138808"/>
+      <text x="30" y="49" text-anchor="middle" font-size="4.5" fill="#FF9933" font-family="Source Sans 3" font-weight="bold">MeitY</text>
+    </svg>
+    <div class="agency-text">
+      <h1>Ministry of Electronics &amp; Information Technology — Data Centre Efficiency Division</h1>
+      <p>Government of India &nbsp;·&nbsp; MeitY &nbsp;·&nbsp; meity.gov.in &nbsp;·&nbsp; भारत सरकार</p>
+    </div>
+    <div class="header-right">
+      <div class="site-title">DCRE Monitor</div>
+      <div class="registry-id">National Data Centre Resource Efficiency Registry &nbsp;·&nbsp; Reg. ID: MeitY-DCRE-2024</div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="inner">
+    <div class="nav-tab active" onclick="showTab('classification',this)">Facility Classification</div>
+    <div class="nav-tab" onclick="showTab('calculator',this)">DCRE Calculator</div>
+    <div class="nav-tab" onclick="showTab('modeling',this)">Modeling &amp; Projections</div>
+    <div class="nav-tab" onclick="showTab('reports',this)">Reports &amp; Downloads</div>
+    <div class="nav-tab" onclick="showTab('methodology',this)">Methodology</div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     TAB 1: FACILITY CLASSIFICATION
+     ============================================================ -->
+<div id="tab-classification" class="tab-panel active">
+  <div class="page-header">
+    <div class="inner">
+      <h2>Facility Classification Registry</h2>
+      <p>DCRE Tier Assignments — Current Registration Period · Updated: March 2025 · MeitY National Data Centre Registry</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stat-bar" id="statBar">
+      <div class="stat-tile total"><div class="num" id="statTotal">0</div><div class="label">Total Registered</div></div>
+      <div class="stat-tile platinum"><div class="num" id="statPlatinum">0</div><div class="label">⬡ Platinum</div></div>
+      <div class="stat-tile gold"><div class="num" id="statGold">0</div><div class="label">★ Gold</div></div>
+      <div class="stat-tile silver"><div class="num" id="statSilver">0</div><div class="label">◈ Silver</div></div>
+      <div class="stat-tile red"><div class="num" id="statRed">0</div><div class="label">✖ Red-Flagged</div></div>
+    </div>
+
+    <div class="table-controls">
+      <input type="text" id="searchInput" placeholder="🔍  Search by facility name…" oninput="filterTable()">
+      <select id="filterTier" onchange="filterTable()">
+        <option value="">All Tiers</option>
+        <option value="Platinum">Platinum</option>
+        <option value="Gold">Gold</option>
+        <option value="Silver">Silver</option>
+        <option value="Red-Flagged">Red-Flagged</option>
+      </select>
+      <select id="filterClimate" onchange="filterTable()">
+        <option value="">All Climate Zones</option>
+        <option value="1">Zone 1</option><option value="2">Zone 2</option>
+        <option value="3">Zone 3</option><option value="4">Zone 4</option>
+        <option value="5">Zone 5</option><option value="6">Zone 6</option>
+        <option value="7">Zone 7</option>
+      </select>
+      <select id="filterWater" onchange="filterTable()">
+        <option value="">All Water Stress</option>
+        <option value="0">0 – Low</option><option value="1">1 – Low-Medium</option>
+        <option value="2">2 – Medium-High</option><option value="3">3 – High</option>
+        <option value="4">4 – Very High</option><option value="5">5 – Extremely High</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ Export Table (CSV)</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="facilityTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable('id')">Facility ID</th>
+            <th onclick="sortTable('name')">Facility Name</th>
+            <th onclick="sortTable('country')">Country / Region</th>
+            <th onclick="sortTable('climate')">Climate Zone</th>
+            <th onclick="sortTable('waterStress')">Water Stress</th>
+            <th onclick="sortTable('dcre')">DCRE Score</th>
+            <th>Tier</th>
+          </tr>
+        </thead>
+        <tbody id="facilityTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 2: DCRE CALCULATOR
+     ============================================================ -->
+<div id="tab-calculator" class="tab-panel">
+  <div class="page-header">
+    <div class="inner">
+      <h2>DCRE Score Assessment Tool</h2>
+      <p>Compute DCRE scores using manual data entry or by uploading a certified calculation workbook</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="calc-mode-tabs">
+      <div class="calc-mode-tab active" onclick="showCalcMode('manual',this)">Manual Entry</div>
+      <div class="calc-mode-tab" onclick="showCalcMode('upload',this)">Upload Excel Model</div>
+    </div>
+
+    <!-- MANUAL MODE -->
+    <div id="calcMode-manual" class="calc-mode-panel active">
+      <div style="display:grid; grid-template-columns:1fr 380px; gap:24px;">
+        <div>
+          <div class="form-section">
+            <h3>DCRE Score Assessment Tool — Manual Entry</h3>
+            <p class="subtitle">Enter facility parameters below. Fields marked with a yellow background are required inputs.</p>
+            <div class="form-group">
+              <label>Facility Name <span id="nameTag"></span></label>
+              <input type="text" id="calcName" placeholder="e.g., Ashburn West Campus DC-1" oninput="calcDCRE()">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Annual IT Energy (kWh) <span id="itEnergyTag"></span></label>
+                <input type="number" id="calcITEnergy" placeholder="e.g., 45000000" oninput="calcDCRE()">
+              </div>
+              <div class="form-group">
+                <label>Total Facility Energy (kWh) <span id="totalEnergyTag"></span></label>
+                <input type="number" id="calcTotalEnergy" placeholder="e.g., 54000000" oninput="calcDCRE()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Annual Water Consumed (liters) <span id="waterTag"></span></label>
+                <input type="number" id="calcWater" placeholder="e.g., 12000000" oninput="calcDCRE()">
+              </div>
+              <div class="form-group">
+                <label>Water Stress Factor (0–5) <span id="wsTag"></span></label>
+                <select id="calcWaterStress" onchange="calcDCRE()">
+                  <option value="">— Select —</option>
+                  <option value="0">0 – Low</option>
+                  <option value="1">1 – Low-Medium</option>
+                  <option value="2">2 – Medium-High</option>
+                  <option value="3">3 – High</option>
+                  <option value="4">4 – Very High</option>
+                  <option value="5">5 – Extremely High</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Climate Zone (1–7) <span id="czTag"></span></label>
+                <select id="calcClimate" onchange="calcDCRE()">
+                  <option value="">— Select —</option>
+                  <option value="1">1 – Very Hot/Humid (ASHRAE 0A–1A)</option>
+                  <option value="2">2 – Hot/Dry (ASHRAE 2B–3B)</option>
+                  <option value="3">3 – Warm/Mixed (ASHRAE 3C–4A)</option>
+                  <option value="4">4 – Mixed/Continental (ASHRAE 4B–5A)</option>
+                  <option value="5">5 – Cool/Humid (ASHRAE 5B–6A)</option>
+                  <option value="6">6 – Cold (ASHRAE 6B–7)</option>
+                  <option value="7">7 – Very Cold/Arctic (ASHRAE 8)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>DCRE Level (1–4) <span id="levelTag"></span></label>
+                <select id="calcLevel" onchange="calcDCRE()">
+                  <option value="">— Select —</option>
+                  <option value="1">Level 1 – FEE + WUE only</option>
+                  <option value="2">Level 2 – FEE + WUI</option>
+                  <option value="3">Level 3 – FEE + WUI + Climate Zone</option>
+                  <option value="4">Level 4 – FEE + WUI + Climate + Water Source</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-green" onclick="addToRegistry()">＋ Add to Registry</button>
+          </div>
+        </div>
+
+        <!-- RESULT PANEL -->
+        <div class="result-panel" id="calcResultPanel">
+          <h3>Live Score Assessment</h3>
+          <div id="scoreBadge" class="score-badge-big" style="border-color:#2a3a5c; color:#6b7ea0;">
+            <div class="score-num" id="scoreNum">—</div>
+            <div class="tier-label" id="tierLabel">Enter data to compute</div>
+          </div>
+          <div id="formulaSteps">
+            <div class="formula-step" style="color:#4a5568">Awaiting input…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPLOAD MODE -->
+    <div id="calcMode-upload" class="calc-mode-panel">
+      <div class="form-section">
+        <h3>Upload DCRE Calculation Workbook</h3>
+        <p class="subtitle">Drag and drop or click to upload your certified DCRE Excel workbook. All processing is performed client-side — no data is transmitted to any server.</p>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('xlsxInput').click()" ondragover="e=>e.preventDefault()" ondrop="handleDrop(event)">
+          <div class="upload-icon">📋</div>
+          <strong>Click to upload or drag &amp; drop</strong>
+          <p>Accepted format: .xlsx · DCRE Calculation Workbook Ver. 1+</p>
+          <p style="margin-top:8px; font-size:11px; color:#8896ab">Federal document submission — Secure client-side processing only</p>
+        </div>
+        <input type="file" id="xlsxInput" accept=".xlsx" style="display:none" onchange="handleFileUpload(event)">
+        <div id="uploadStatus" style="margin-top:12px; font-size:13px;"></div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-secondary btn-sm" onclick="downloadTemplate()">⬇ Download Blank Template (.xlsx)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 3: MODELING & PROJECTIONS
+     ============================================================ -->
+<div id="tab-modeling" class="tab-panel">
+  <div class="page-header">
+    <div class="inner">
+      <h2>Resource Impact Modeling Tool</h2>
+      <p>Simulate how changes in facility parameters affect DCRE classification — results update instantly</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="model-layout">
+      <!-- LEFT: Controls -->
+      <div>
+        <div class="form-section">
+          <h3>Scenario Parameters</h3>
+          <p class="subtitle">Adjust sliders to project DCRE score changes in real time</p>
+          <div class="form-group">
+            <label>Base Facility</label>
+            <select id="modelFacility" onchange="updateModel()">
+              <option value="">-- Select Facility --</option>
+            </select>
+          </div>
+          <div class="slider-group">
+            <label>Water Stress <span id="lblWS" style="font-size:13px;font-weight:700;color:var(--navy)">3 - High</span></label>
+            <input type="range" id="rngWaterStress" min="0" max="5" step="1" value="3" oninput="handleSlider();updateModel()">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#8896ab;margin-top:2px;"><span>0 Low</span><span>5 Extreme</span></div>
+          </div>
+          <div class="slider-group">
+            <label>Climate Zone <span id="lblCZ" style="font-size:13px;font-weight:700;color:var(--navy)">4 - Mixed</span></label>
+            <input type="range" id="rngClimate" min="1" max="7" step="1" value="4" oninput="handleSlider();updateModel()">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#8896ab;margin-top:2px;"><span>1 Hardest</span><span>7 Easiest</span></div>
+          </div>
+          <div class="slider-group">
+            <label>IT Load % of baseline <span id="lblIT" style="font-size:13px;font-weight:700;color:var(--navy)">100%</span></label>
+            <input type="range" id="rngIT" min="50" max="150" step="5" value="100" oninput="handleSlider();updateModel()">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#8896ab;margin-top:2px;"><span>50%</span><span>150%</span></div>
+          </div>
+          <div class="slider-group">
+            <label>Water Consumption % of baseline <span id="lblWC" style="font-size:13px;font-weight:700;color:var(--navy)">100%</span></label>
+            <input type="range" id="rngWater" min="50" max="150" step="5" value="100" oninput="handleSlider();updateModel()">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#8896ab;margin-top:2px;"><span>50%</span><span>150%</span></div>
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label>DCRE Level</label>
+            <select id="modelLevel" onchange="updateModel()">
+              <option value="1">Level 1 - FEE + WUE</option>
+              <option value="2">Level 2 - FEE + WUI</option>
+              <option value="3" selected>Level 3 - FEE + WUI + Climate</option>
+              <option value="4">Level 4 - Full</option>
+            </select>
+          </div>
+        </div>
+        <!-- SUMMARY BOX -->
+        <div id="scenarioSummaryBox" style="display:none;background:white;border:1px solid var(--gray-border);padding:16px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#8896ab;font-weight:700;margin-bottom:12px;">Projection Summary</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div style="text-align:center;padding:12px;background:#f0f4fa;border:1px solid #dce3ef;">
+              <div style="font-size:10px;color:#8896ab;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Current Score</div>
+              <div id="sumCurrScore" style="font-size:24px;font-weight:700;font-family:'Source Serif 4',serif;color:var(--navy);">-</div>
+              <div id="sumCurrTier" style="margin-top:4px;"></div>
+            </div>
+            <div style="text-align:center;padding:12px;background:#f0f4fa;border:1px solid #dce3ef;">
+              <div style="font-size:10px;color:#8896ab;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Projected Score</div>
+              <div id="sumProjScore" style="font-size:24px;font-weight:700;font-family:'Source Serif 4',serif;color:var(--navy);">-</div>
+              <div id="sumProjTier" style="margin-top:4px;"></div>
+            </div>
+          </div>
+          <div id="sumDelta" style="text-align:center;font-size:15px;font-weight:700;padding:8px;background:#f8f9fb;border:1px solid var(--gray-border);"></div>
+        </div>
+      </div>
+      <!-- RIGHT: Gauges + Chart -->
+      <div>
+        <div style="background:white;border:1px solid var(--gray-border);padding:20px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8896ab;margin-bottom:12px;text-align:center;">DCRE Score Gauge</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--gray-border);">
+            <div style="padding:16px;text-align:center;border-right:1px solid var(--gray-border);">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#8896ab;margin-bottom:8px;">CURRENT</div>
+              <canvas id="gaugeCurrent" width="220" height="130"></canvas>
+              <div id="gaugeCurrLabel" style="font-size:12px;color:var(--gray-dark);margin-top:4px;">-</div>
+            </div>
+            <div style="padding:16px;text-align:center;">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#8896ab;margin-bottom:8px;">PROJECTED</div>
+              <canvas id="gaugeProjected" width="220" height="130"></canvas>
+              <div id="gaugeProjLabel" style="font-size:12px;color:var(--gray-dark);margin-top:4px;">Select a facility</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:white;border:1px solid var(--gray-border);padding:20px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#8896ab;margin-bottom:4px;">Sub-Component Breakdown</div>
+          <div style="display:flex;gap:16px;margin-bottom:14px;font-size:11px;align-items:center;margin-top:10px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;background:var(--navy);"></div> Current</div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;background:#FF9933;"></div> Projected</div>
+          </div>
+          <div id="compChartDetailed">
+            <div style="color:#8896ab;font-size:12px;padding:20px 0;">Select a facility to view sub-component breakdown</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 4: REPORTS & DOWNLOADS
+     ============================================================ -->
+<div id="tab-reports" class="tab-panel">
+  <div class="page-header">
+    <div class="inner">
+      <h2>Official DCRE Compliance Reports</h2>
+      <p>Generate, download, and print official MeitY facility compliance documentation · Government of India</p>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Section A -->
+    <div class="report-form">
+      <h3>Section A — Generate Facility Report</h3>
+      <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:16px;">
+        <div class="form-group" style="margin:0; min-width:280px;">
+          <label>Select Facility</label>
+          <select id="reportFacility" style="width:100%; padding:8px 12px; border:1px solid var(--gray-border); font-family:var(--font); font-size:13px;"></select>
+        </div>
+        <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+        <button class="btn btn-secondary" onclick="window.print()">🖨 Print / Save as PDF</button>
+      </div>
+      <div id="reportOutput"></div>
+    </div>
+
+    <!-- Section B -->
+    <div class="report-form">
+      <h3>Section B — Bulk Data Downloads</h3>
+      <div class="download-grid">
+        <div class="download-card">
+          <div class="dl-icon">📊</div>
+          <h4>Full Registry (CSV)</h4>
+          <p>All registered facilities with DCRE scores, tiers, and metadata</p>
+          <button class="btn btn-primary btn-sm" onclick="exportCSV()">⬇ Download CSV</button>
+        </div>
+        <div class="download-card">
+          <div class="dl-icon">📄</div>
+          <h4>Methodology Reference</h4>
+          <p>Print-ready HTML document — DCRE methodology, formulas, and scoring criteria</p>
+          <button class="btn btn-primary btn-sm" onclick="showTab('methodology',null)">View Methodology</button>
+        </div>
+        <div class="download-card">
+          <div class="dl-icon">📋</div>
+          <h4>Blank DCRE Template (.xlsx)</h4>
+          <p>Certified blank workbook template for DCRE Level 1–4 calculation</p>
+          <button class="btn btn-primary btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="report-form">
+      <h3>Section C — Summary Statistics Panel</h3>
+      <div id="summaryStats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 5: METHODOLOGY
+     ============================================================ -->
+<div id="tab-methodology" class="tab-panel">
+  <div class="page-header">
+    <div class="inner">
+      <h2>Methodology Reference Document</h2>
+      <p>MeitY Technical Reference · Official Policy Documentation · Government of India</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="method-doc">
+      <div class="doc-header">
+        <div class="doc-title">Data Center Resource Effectiveness (DCRE) Metric — Technical Reference &amp; Scoring Methodology</div>
+        <div class="doc-meta">Document Ref: MeitY-DCRE-METH-2024-001 · Version 1.0 · Effective Date: January 1, 2024 · Ministry of Electronics &amp; Information Technology, Government of India · Supersedes: PUE Reference Guide v3.2</div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>1. Facility Energy Effectiveness (FEE)</span><span class="acc-icon">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h5>Definition</h5>
+          <p>Facility Energy Effectiveness (FEE) is the ratio of total facility energy consumed to IT equipment energy consumed. FEE is equivalent to PUE in format (≥1.0, lower is better) and serves as the primary energy efficiency indicator within the DCRE framework.</p>
+          <h5>Formula</h5>
+          <div class="formula-block">FEE = Total Facility Energy (kWh) ÷ Total IT Equipment Energy (kWh)</div>
+          <h5>Data Inputs</h5>
+          <p><strong>Total Facility Energy:</strong> All energy consumed at the facility boundary, including IT load, cooling, lighting, and power conversion losses.<br>
+          <strong>IT Equipment Energy:</strong> Energy consumed by compute, storage, and networking equipment directly serving the data center mission.</p>
+          <h5>Measurement Period</h5>
+          <p>Annual measurement is required. Data must reflect 12 consecutive months of operation. Partial-year submissions require a proportional extrapolation methodology with documented justification. FEE cannot be below 1.0 by definition.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>2. Water Consumed &amp; Water Usage Effectiveness (WUE)</span><span class="acc-icon">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h5>Definition</h5>
+          <p>Water Usage Effectiveness (WUE) measures the volume of potable water consumed at the facility per unit of IT energy consumed. WUE is applicable for DCRE Level 1 assessments only.</p>
+          <h5>Potable Water Scope</h5>
+          <p>For purposes of this metric, "water consumed" means potable water: water derived from municipal water systems or fresh water withdrawn from aquifers suitable for human consumption or farming. The following are excluded from the water consumed measurement:</p>
+          <ul style="margin:8px 0 8px 20px; font-size:13px; color:var(--gray-dark);">
+            <li>Water drawn from a body of water and returned directly (not consumed)</li>
+            <li>Internally recycled water within site boundaries</li>
+            <li>Collected rainwater used within the site boundary</li>
+          </ul>
+          <h5>Formula</h5>
+          <div class="formula-block">WUE = Annual Water Consumed (liters) ÷ Annual IT Energy (kWh)</div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>3. Water Stress Factor (WS)</span><span class="acc-icon">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h5>Source</h5>
+          <p>The Water Stress Factor is derived from the World Resources Institute (WRI) Aqueduct Water Risk Atlas. Geographic determination is based on the facility's registered latitude and longitude coordinates cross-referenced against the Aqueduct Baseline Water Stress layer.</p>
+          <h5>Scale Descriptions (0–5)</h5>
+          <table style="width:100%; font-size:12px; border-collapse:collapse; margin:10px 0;">
+            <tr style="background:#f8f9fb;"><th style="padding:6px 10px; border:1px solid #ddd; text-align:left;">Value</th><th style="padding:6px 10px; border:1px solid #ddd; text-align:left;">Category</th><th style="padding:6px 10px; border:1px solid #ddd; text-align:left;">Description</th></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">0</td><td style="padding:6px 10px; border:1px solid #ddd;">Low</td><td style="padding:6px 10px; border:1px solid #ddd;">&lt;10% of available water withdrawn annually</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">1</td><td style="padding:6px 10px; border:1px solid #ddd;">Low-Medium</td><td style="padding:6px 10px; border:1px solid #ddd;">10–20% of available water withdrawn</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">2</td><td style="padding:6px 10px; border:1px solid #ddd;">Medium-High</td><td style="padding:6px 10px; border:1px solid #ddd;">20–40% of available water withdrawn</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">3</td><td style="padding:6px 10px; border:1px solid #ddd;">High</td><td style="padding:6px 10px; border:1px solid #ddd;">40–80% of available water withdrawn</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">4</td><td style="padding:6px 10px; border:1px solid #ddd;">Very High</td><td style="padding:6px 10px; border:1px solid #ddd;">80–100% of available water withdrawn</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">5</td><td style="padding:6px 10px; border:1px solid #ddd;">Extremely High</td><td style="padding:6px 10px; border:1px solid #ddd;">&gt;100% withdrawn (groundwater mining)</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>4. Water Usage Impact (WUI)</span><span class="acc-icon">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h5>Definition</h5>
+          <p>Water Usage Impact (WUI) is a composite proxy metric that incorporates both the volume of water consumed and the scarcity context of the geographic location. WUI replaces WUE at DCRE Levels 2 through 4 to provide a more operationally relevant indicator of water resource impact.</p>
+          <h5>Formula</h5>
+          <div class="formula-block">WUI = Water Consumed (liters/kWh) × (Water Stress Factor + 1)</div>
+          <p style="margin-top:8px;">The additive constant of 1 ensures WUI is defined even in zero-stress regions, maintaining consistent mathematical behavior across all stress levels. A facility in a zero-stress zone (WS=0) still accrues a WUI equal to its WUE, ensuring consumption is never fully discounted.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>5. Climate Zones (ASHRAE 169)</span><span class="acc-icon">▼</span>
+        </div>
+        <div class="accordion-body">
+          <h5>Basis</h5>
+          <p>Climate Zone factors are derived from ASHRAE Standard 169 (Climatic Data for Building Design Standards), adapted for data center thermal management assessment. The scale runs from 1 (hardest to cool) to 7 (easiest to cool), reflecting the thermodynamic effort required for heat rejection.</p>
+          <table style="width:100%; font-size:12px; border-collapse:collapse; margin:10px 0;">
+            <tr style="background:#f8f9fb;"><th style="padding:6px 10px; border:1px solid #ddd;">Zone</th><th style="padding:6px 10px; border:1px solid #ddd;">ASHRAE Equivalent</th><th style="padding:6px 10px; border:1px solid #ddd;">Description</th><th style="padding:6px 10px; border:1px solid #ddd;">CZ Factor</th></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">1</td><td style="padding:6px 10px; border:1px solid #ddd;">0A–1A</td><td style="padding:6px 10px; border:1px solid #ddd;">Very Hot/Humid — mechanical cooling almost always required</td><td style="padding:6px 10px; border:1px solid #ddd;">1.20</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">2</td><td style="padding:6px 10px; border:1px solid #ddd;">2A–2B</td><td style="padding:6px 10px; border:1px solid #ddd;">Hot — limited economizer hours</td><td style="padding:6px 10px; border:1px solid #ddd;">1.15</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">3</td><td style="padding:6px 10px; border:1px solid #ddd;">3A–3C</td><td style="padding:6px 10px; border:1px solid #ddd;">Warm — moderate economizer potential</td><td style="padding:6px 10px; border:1px solid #ddd;">1.10</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">4</td><td style="padding:6px 10px; border:1px solid #ddd;">4A–4C</td><td style="padding:6px 10px; border:1px solid #ddd;">Mixed — significant economizer hours</td><td style="padding:6px 10px; border:1px solid #ddd;">1.05</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">5</td><td style="padding:6px 10px; border:1px solid #ddd;">5A–5C</td><td style="padding:6px 10px; border:1px solid #ddd;">Cool — high economizer availability</td><td style="padding:6px 10px; border:1px solid #ddd;">1.02</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">6</td><td style="padding:6px 10px; border:1px solid #ddd;">6A–6B</td><td style="padding:6px 10px; border:1px solid #ddd;">Cold — free cooling most of year</td><td style="padding:6px 10px; border:1px solid #ddd;">1.00</td></tr>
+            <tr><td style="padding:6px 10px; border:1px solid #ddd;">7</td><td style="padding:6px 10px; border:1px solid #ddd;">7–8</td><td style="padding:6px 10px; border:1px solid #ddd;">Very Cold/Arctic — near-unlimited free cooling</td><td style="padding:6px 10px; border:1px solid #ddd;">0.95</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- TIER TABLE -->
+      <h3 style="font-size:16px; margin:32px 0 12px; font-family:var(--serif);">Tier Classification Reference</h3>
+      <div class="table-wrap">
+        <table class="tier-ref-table">
+          <thead><tr><th>Tier</th><th>DCRE Score Range</th><th>Badge Color</th><th>Operational Interpretation</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-platinum">⬡ PLATINUM</span></td><td>1.00 – 1.20</td><td>Deep Blue #1a2744</td><td>Exceptional efficiency, exemplary resource management. Facility demonstrates best-in-class performance across all measured dimensions.</td></tr>
+            <tr><td><span class="badge badge-gold">★ GOLD</span></td><td>1.21 – 1.40</td><td>Gold #b8860b</td><td>Strong performance, meets best-practice benchmarks. Minor optimization opportunities exist but overall resource management is commendable.</td></tr>
+            <tr><td><span class="badge badge-silver">◈ SILVER</span></td><td>1.41 – 1.60</td><td>Silver #708090</td><td>Acceptable performance, improvement recommended. A formal efficiency roadmap is advised within 18 months of classification.</td></tr>
+            <tr><td><span class="badge badge-red">✖ RED-FLAGGED</span></td><td>&gt; 1.60</td><td>Red #c0392b</td><td>Below standard, corrective action required. Facility must submit a remediation plan within 90 days of classification or face registry suspension.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WHY DCRE -->
+      <h3 style="font-size:16px; margin:32px 0 12px; font-family:var(--serif);">Why DCRE Replaces PUE</h3>
+      <p style="font-size:13px; color:var(--gray-dark); margin-bottom:16px; line-height:1.7;">The Data Center Resource Effectiveness metric was developed in response to six identified limitations of PUE as a standalone efficiency benchmark. Each criterion reflects a quality standard adopted under MeitY's National Data Centre Policy framework for regulatory and compliance use across India:</p>
+      <div style="display:grid; gap:12px;">
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>1. Ease of Use:</strong> <span style="font-size:13px; color:var(--gray-dark);">DCRE is computed from operationally available data already collected by most modern data centres in India. No additional instrumentation is required at Levels 1–2, easing adoption for Tier II and Tier III cities.</span>
+        </div>
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>2. Cost:</strong> <span style="font-size:13px; color:var(--gray-dark);">Implementation cost is negligible at lower levels, leveraging existing utility metering and water billing data rather than specialised submetering infrastructure — aligning with India's Digital Infrastructure expansion targets.</span>
+        </div>
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>3. Non-Invasiveness:</strong> <span style="font-size:13px; color:var(--gray-dark);">DCRE does not require physical access to IT equipment or network topology disclosure, preserving security and operational confidentiality for government and defence-adjacent data centre facilities.</span>
+        </div>
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>4. Objectivity:</strong> <span style="font-size:13px; color:var(--gray-dark);">Geographic water stress factors are sourced from a neutral third-party (WRI Aqueduct), eliminating self-reported bias and ensuring consistent cross-facility comparability across India's diverse hydro-climatic regions.</span>
+        </div>
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>5. Modelling Capability:</strong> <span style="font-size:13px; color:var(--gray-dark);">The tiered level structure enables progressive adoption and scenario modelling under MeitY's Green Data Centre guidelines, allowing facilities to project tier changes before making capital investments.</span>
+        </div>
+        <div style="padding:14px 16px; border-left:3px solid #FF9933; background:#f8f9fb;">
+          <strong>6. Relevance:</strong> <span style="font-size:13px; color:var(--gray-dark);">By incorporating water stress geography and climate zone penalties specific to the Indian subcontinent, DCRE captures the full environmental cost of data centre operations in a single composite score, directly aligned with India's National Water Policy and Net Zero commitments.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// EXCEL CELL MAP — Update these to match your workbook structure
+// ============================================================
+const EXCEL_MAP = {
+  sheet: "DCRE-Tool-Ver.1",
+  itEnergy: "B6",        // Annual IT Energy (kWh)
+  totalEnergy: "B6",     // Total Facility Energy (kWh) — row 6 in uploaded file
+  waterConsumed: "B7",   // Annual Water Consumed (liters)
+  waterStress: "B8",     // Water Stress Factor (0–5)
+  climateZone: "B10",    // Climate Zone (1–7)
+  dcreLevel: "B9"        // DCRE Level (1–4)
+};
+// ============================================================
+
+// ============================================================
+// DATA
+// ============================================================
+let facilities = [
+  // Maharashtra – Hot/humid coast, high water stress
+  { id:'MH-001', name:'Navi Mumbai Hyperscale Campus – NxtraByAirtel', country:'India – Maharashtra', climate:1, waterStress:3, itEnergy:120e6, totalEnergy:138e6, water:28e6, level:3 },
+  { id:'MH-002', name:'Pune Hinjewadi IT Park Data Centre – CtrlS', country:'India – Maharashtra', climate:2, waterStress:3, itEnergy:85e6, totalEnergy:106.25e6, water:22e6, level:3 },
+  // Tamil Nadu – Tropical coastal, high stress
+  { id:'TN-001', name:'Chennai Perungudi Tier IV Hub – Yotta Infrastructure', country:'India – Tamil Nadu', climate:1, waterStress:4, itEnergy:95e6, totalEnergy:128.25e6, water:34e6, level:3 },
+  { id:'TN-002', name:'Chennai Ambattur NationalDC – STPI', country:'India – Tamil Nadu', climate:1, waterStress:4, itEnergy:55e6, totalEnergy:77e6, water:26e6, level:2 },
+  // Karnataka – Warm/mixed Deccan Plateau, medium stress
+  { id:'KA-001', name:'Bengaluru Whitefield Carrier-Neutral DC – STT GDC India', country:'India – Karnataka', climate:3, waterStress:3, itEnergy:110e6, totalEnergy:132e6, water:18e6, level:3 },
+  { id:'KA-002', name:'Bengaluru Electronic City Campus – NTT Data India', country:'India – Karnataka', climate:3, waterStress:3, itEnergy:90e6, totalEnergy:108e6, water:15e6, level:3 },
+  // Telangana – Hot semi-arid, high stress
+  { id:'TS-001', name:'Hyderabad HITEC City DC Park – Adani Connex', country:'India – Telangana', climate:2, waterStress:4, itEnergy:100e6, totalEnergy:130e6, water:30e6, level:3 },
+  { id:'TS-002', name:'Hyderabad Gachibowli Tier III – Netmagic Solutions', country:'India – Telangana', climate:2, waterStress:4, itEnergy:65e6, totalEnergy:88.4e6, water:23e6, level:3 },
+  // Delhi NCR – Composite/continental, very high stress
+  { id:'DL-001', name:'New Delhi Okhla Phase II National DC – NIC', country:'India – Delhi NCR', climate:2, waterStress:5, itEnergy:130e6, totalEnergy:175.5e6, water:48e6, level:3 },
+  { id:'DL-002', name:'Noida Sector 135 GovCloud Hub – Meghraj', country:'India – Uttar Pradesh', climate:2, waterStress:5, itEnergy:80e6, totalEnergy:108e6, water:38e6, level:3 },
+  // Gujarat – Hot/dry, very high stress
+  { id:'GJ-001', name:'Ahmedabad GIFT City Fintech DC – Iron Mountain', country:'India – Gujarat', climate:2, waterStress:4, itEnergy:70e6, totalEnergy:94.5e6, water:25e6, level:3 },
+  { id:'GJ-002', name:'Surat Hazira Industrial DC – BSNL NatStack', country:'India – Gujarat', climate:2, waterStress:5, itEnergy:45e6, totalEnergy:63e6, water:29e6, level:2 },
+  // West Bengal – Hot/humid east, medium stress
+  { id:'WB-001', name:'Kolkata New Town Tech Hub – Webwerks India', country:'India – West Bengal', climate:1, waterStress:2, itEnergy:60e6, totalEnergy:75e6, water:16e6, level:3 },
+  // Rajasthan – Arid/desert, extremely high stress
+  { id:'RJ-001', name:'Jaipur Sitapura SEZ Data Centre – RISL', country:'India – Rajasthan', climate:2, waterStress:5, itEnergy:50e6, totalEnergy:70e6, water:32e6, level:3 },
+  // Himachal Pradesh – Cool Himalayan foothills, low stress
+  { id:'HP-001', name:'Shimla Green Cloud Campus – HIMCOSTE', country:'India – Himachal Pradesh', climate:5, waterStress:0, itEnergy:40e6, totalEnergy:44e6, water:3.2e6, level:3 },
+  // Uttarakhand – Cool/semi-arid hills, low stress
+  { id:'UK-001', name:'Dehradun Sahastradhara IT Park DC – UIIT', country:'India – Uttarakhand', climate:4, waterStress:1, itEnergy:35e6, totalEnergy:40.25e6, water:5.5e6, level:3 },
+  // Kerala – Tropical humid, low-medium stress
+  { id:'KL-001', name:'Kochi Infopark Tier III Facility – CMS IT Services', country:'India – Kerala', climate:1, waterStress:1, itEnergy:48e6, totalEnergy:57.6e6, water:9e6, level:3 },
+  // Punjab – Semi-arid northwest, high stress
+  { id:'PB-001', name:'Mohali IT City Carrier DC – Tata Communications', country:'India – Punjab', climate:3, waterStress:4, itEnergy:55e6, totalEnergy:69.3e6, water:20e6, level:3 }
+];
+
+let currentSort = { field: 'dcre', asc: true };
+
+// CZ factors
+const CZ_FACTOR = {1:1.20,2:1.15,3:1.10,4:1.05,5:1.02,6:1.00,7:0.95};
+
+function computeDCRE(f, overrides = {}) {
+  const itE = overrides.itEnergy !== undefined ? overrides.itEnergy : f.itEnergy;
+  const totE = overrides.totalEnergy !== undefined ? overrides.totalEnergy : f.totalEnergy;
+  const water = overrides.water !== undefined ? overrides.water : f.water;
+  const ws = overrides.waterStress !== undefined ? overrides.waterStress : f.waterStress;
+  const cz = overrides.climate !== undefined ? overrides.climate : f.climate;
+  const level = overrides.level !== undefined ? overrides.level : f.level;
+
+  const fee = totE / itE;
+  const wue = water / itE;
+  const wui = wue * (ws + 1);
+  const czFactor = CZ_FACTOR[cz] || 1.0;
+
+  let score;
+  let waterFactor, waterLabel;
+
+  if (level === 1) {
+    score = fee * (1 + wue * 0.2);
+    waterFactor = wue;
+    waterLabel = 'WUE';
+  } else {
+    waterFactor = wui;
+    waterLabel = 'WUI';
+    if (level === 2) score = fee * (1 + wui * 0.2);
+    else if (level === 3) score = fee * (1 + wui * 0.2) * czFactor;
+    else score = fee * (1 + wui * 0.2) * czFactor * 1.02;
+  }
+
+  return { fee, wue, wui, waterFactor, waterLabel, czFactor, score, level };
+}
+
+function getTier(score) {
+  if (score <= 1.20) return { label:'Platinum', cls:'badge-platinum', sym:'⬡', color:'#1a2744' };
+  if (score <= 1.40) return { label:'Gold', cls:'badge-gold', sym:'★', color:'#b8860b' };
+  if (score <= 1.60) return { label:'Silver', cls:'badge-silver', sym:'◈', color:'#708090' };
+  return { label:'Red-Flagged', cls:'badge-red', sym:'✖', color:'#c0392b' };
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function showTab(tab, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      if (t.textContent.toLowerCase().includes(tab.substring(0,4))) t.classList.add('active');
+    });
+  }
+  if (tab === 'reports') buildSummaryStats();
+}
+
+// ============================================================
+// TAB 1 — CLASSIFICATION
+// ============================================================
+function renderTable() {
+  const tbody = document.getElementById('facilityTbody');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const tierF = document.getElementById('filterTier').value;
+  const climateF = document.getElementById('filterClimate').value;
+  const waterF = document.getElementById('filterWater').value;
+
+  let data = facilities.map(f => ({ ...f, ...computeDCRE(f), tier: getTier(computeDCRE(f).score) }));
+
+  data = data.filter(f => {
+    if (search && !f.name.toLowerCase().includes(search) && !f.id.toLowerCase().includes(search)) return false;
+    if (tierF && f.tier.label !== tierF) return false;
+    if (climateF && String(f.climate) !== climateF) return false;
+    if (waterF && String(f.waterStress) !== waterF) return false;
+    return true;
+  });
+
+  // Sort
+  data.sort((a, b) => {
+    let av = a[currentSort.field], bv = b[currentSort.field];
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av < bv) return currentSort.asc ? -1 : 1;
+    if (av > bv) return currentSort.asc ? 1 : -1;
+    return 0;
+  });
+
+  tbody.innerHTML = '';
+  data.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><code style="font-size:11px; color:#4a5568">${f.id}</code></td>
+      <td><strong>${f.name}</strong></td>
+      <td>${f.country}</td>
+      <td>Zone ${f.climate}</td>
+      <td>${f.waterStress} – ${['Low','Low-Med','Med-High','High','Very High','Extremely High'][f.waterStress]}</td>
+      <td style="font-weight:700; font-family:'Source Serif 4', serif; font-size:15px;">${f.score.toFixed(4)}</td>
+      <td><span class="badge ${f.tier.cls}">${f.tier.sym} ${f.tier.label}</span></td>
+    `;
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => toggleDetail(f, tr);
+    tbody.appendChild(tr);
+  });
+
+  updateStats();
+}
+
+function toggleDetail(f, tr) {
+  // Remove existing detail
+  const existing = document.getElementById('detailRow');
+  if (existing) {
+    const wasForSame = existing.dataset.fid === f.id;
+    existing.remove();
+    if (tr.classList.contains('expanded')) { tr.classList.remove('expanded'); if (wasForSame) return; }
+  }
+  document.querySelectorAll('tr.expanded').forEach(r => r.classList.remove('expanded'));
+
+  tr.classList.add('expanded');
+  const r = computeDCRE(f);
+  const tier = getTier(r.score);
+  const maxBar = Math.max(r.fee, r.waterFactor, r.czFactor) * 1.1;
+
+  const detailTr = document.createElement('tr');
+  detailTr.id = 'detailRow';
+  detailTr.dataset.fid = f.id;
+  detailTr.innerHTML = `<td colspan="7" style="padding:0;">
+    <div class="detail-panel open">
+      <div class="detail-grid">
+        <div>
+          <div class="detail-section">
+            <h4>Facility Profile</h4>
+            <table style="font-size:12px; width:100%; border-collapse:collapse;">
+              <tr><td style="padding:4px 8px; color:#6b7ea0;">Facility ID</td><td style="padding:4px 8px; font-weight:700;">${f.id}</td></tr>
+              <tr><td style="padding:4px 8px; color:#6b7ea0;">Country/Region</td><td style="padding:4px 8px;">${f.country}</td></tr>
+              <tr><td style="padding:4px 8px; color:#6b7ea0;">DCRE Level</td><td style="padding:4px 8px;">Level ${f.level}</td></tr>
+              <tr><td style="padding:4px 8px; color:#6b7ea0;">DCRE Score</td><td style="padding:4px 8px; font-weight:700; font-size:15px; font-family:var(--serif);">${r.score.toFixed(4)}</td></tr>
+              <tr><td style="padding:4px 8px; color:#6b7ea0;">Classification</td><td style="padding:4px 8px;"><span class="badge ${tier.cls}">${tier.sym} ${tier.label}</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="detail-section">
+            <h4>Sub-Score Breakdown</h4>
+            <div class="sub-score-row">
+              <div class="sub-score-label">FEE (Energy Ratio)</div>
+              <div class="sub-score-bar-wrap"><div class="sub-score-bar" style="width:${Math.min(100,r.fee/maxBar*100)}%; background:#1a2744;"></div></div>
+              <div class="sub-score-val">${r.fee.toFixed(4)}</div>
+            </div>
+            <div class="sub-score-row">
+              <div class="sub-score-label">${r.waterLabel} (Water Impact)</div>
+              <div class="sub-score-bar-wrap"><div class="sub-score-bar" style="width:${Math.min(100,Math.min(r.waterFactor,5)/maxBar*100*0.5)}%; background:#b8860b;"></div></div>
+              <div class="sub-score-val">${r.waterFactor.toFixed(4)}</div>
+            </div>
+            <div class="sub-score-row">
+              <div class="sub-score-label">Climate Zone Factor</div>
+              <div class="sub-score-bar-wrap"><div class="sub-score-bar" style="width:${Math.min(100,r.czFactor/maxBar*100)}%; background:#708090;"></div></div>
+              <div class="sub-score-val">${r.czFactor.toFixed(2)}</div>
+            </div>
+            <div style="margin-top:12px; padding:10px; background:#111b33; color:#c8a951; font-family:monospace; font-size:11px;">
+              DCRE = FEE × (1 + ${r.waterLabel} × 0.2) ${f.level >= 3 ? '× CZ_Factor' : ''}<br>
+              DCRE = ${r.fee.toFixed(4)} × (1 + ${r.waterFactor.toFixed(4)} × 0.2) ${f.level >= 3 ? '× ' + r.czFactor.toFixed(2) : ''}<br>
+              DCRE = <strong style="color:#fff;">${r.score.toFixed(4)}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </td>`;
+  tr.insertAdjacentElement('afterend', detailTr);
+}
+
+function updateStats() {
+  const all = facilities.map(f => ({ ...computeDCRE(f), tier: getTier(computeDCRE(f).score) }));
+  document.getElementById('statTotal').textContent = all.length;
+  document.getElementById('statPlatinum').textContent = all.filter(f => f.tier.label === 'Platinum').length;
+  document.getElementById('statGold').textContent = all.filter(f => f.tier.label === 'Gold').length;
+  document.getElementById('statSilver').textContent = all.filter(f => f.tier.label === 'Silver').length;
+  document.getElementById('statRed').textContent = all.filter(f => f.tier.label === 'Red-Flagged').length;
+}
+
+function sortTable(field) {
+  if (currentSort.field === field) currentSort.asc = !currentSort.asc;
+  else { currentSort.field = field; currentSort.asc = true; }
+  document.querySelectorAll('th').forEach(th => { th.classList.remove('sort-asc','sort-desc'); });
+  renderTable();
+}
+
+function filterTable() { renderTable(); }
+
+function exportCSV() {
+  const hdr = ['Facility ID','Facility Name','Country/Region','Climate Zone','Water Stress','DCRE Score','Tier'];
+  const rows = facilities.map(f => {
+    const r = computeDCRE(f);
+    const tier = getTier(r.score);
+    return [f.id, f.name, f.country, f.climate, f.waterStress, r.score.toFixed(4), tier.label];
+  });
+  const csv = [hdr, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'DCRE_Registry_Export.csv';
+  a.click();
+}
+
+// ============================================================
+// TAB 2 — CALCULATOR
+// ============================================================
+function showCalcMode(mode, el) {
+  document.querySelectorAll('.calc-mode-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.calc-mode-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('calcMode-' + mode).classList.add('active');
+}
+
+function calcDCRE() {
+  const itE = parseFloat(document.getElementById('calcITEnergy').value);
+  const totE = parseFloat(document.getElementById('calcTotalEnergy').value);
+  const water = parseFloat(document.getElementById('calcWater').value);
+  const ws = parseInt(document.getElementById('calcWaterStress').value);
+  const cz = parseInt(document.getElementById('calcClimate').value);
+  const level = parseInt(document.getElementById('calcLevel').value);
+
+  const badge = document.getElementById('scoreBadge');
+  const scoreEl = document.getElementById('scoreNum');
+  const tierEl = document.getElementById('tierLabel');
+  const steps = document.getElementById('formulaSteps');
+
+  if (!itE || !totE || isNaN(ws) || !cz || !level) {
+    scoreEl.textContent = '—';
+    tierEl.textContent = 'Complete all fields';
+    badge.style.borderColor = '#2a3a5c';
+    badge.style.color = '#6b7ea0';
+    steps.innerHTML = '<div class="formula-step" style="color:#4a5568">Awaiting input…</div>';
+    return;
+  }
+
+  const f = { itEnergy: itE, totalEnergy: totE, water, waterStress: ws, climate: cz, level };
+  const r = computeDCRE(f);
+  const tier = getTier(r.score);
+
+  scoreEl.textContent = r.score.toFixed(4);
+  tierEl.textContent = tier.sym + ' ' + tier.label;
+  badge.style.borderColor = tier.color;
+  badge.style.color = tier.color;
+
+  steps.innerHTML = `
+    <div class="formula-step"><span>FEE</span> = ${totE.toLocaleString()} ÷ ${itE.toLocaleString()} = ${r.fee.toFixed(4)}</div>
+    <div class="formula-step"><span>WUE</span> = ${water.toLocaleString()}L ÷ ${itE.toLocaleString()}kWh = ${r.wue.toFixed(4)} L/kWh</div>
+    ${level >= 2 ? `<div class="formula-step"><span>WUI</span> = WUE × (WS + 1) = ${r.wue.toFixed(4)} × ${ws + 1} = ${r.wui.toFixed(4)}</div>` : ''}
+    ${level >= 3 ? `<div class="formula-step"><span>CZ Factor</span> = ${r.czFactor.toFixed(2)} (Zone ${cz})</div>` : ''}
+    <div class="formula-step"><span>DCRE</span> = FEE × (1 + ${r.waterLabel} × 0.2)${level >= 3 ? ' × CZ' : ''} = <span style="color:#fff; font-size:14px;">${r.score.toFixed(4)}</span></div>
+  `;
+}
+
+function addToRegistry() {
+  const name = document.getElementById('calcName').value || 'New Facility';
+  const itE = parseFloat(document.getElementById('calcITEnergy').value);
+  const totE = parseFloat(document.getElementById('calcTotalEnergy').value);
+  const water = parseFloat(document.getElementById('calcWater').value);
+  const ws = parseInt(document.getElementById('calcWaterStress').value);
+  const cz = parseInt(document.getElementById('calcClimate').value);
+  const level = parseInt(document.getElementById('calcLevel').value);
+  if (!itE || !totE) { alert('Please complete all required fields before adding to the registry.'); return; }
+  const newF = {
+    id: 'DC-' + String(facilities.length + 1).padStart(3,'0'),
+    name, country: 'User-Submitted',
+    climate: cz || 4, waterStress: ws || 0,
+    itEnergy: itE, totalEnergy: totE, water: water || 0, level: level || 1
+  };
+  facilities.push(newF);
+  renderTable();
+  alert(`✓ ${name} has been added to the registry as ${newF.id}.`);
+  showTab('classification', document.querySelector('.nav-tab'));
+}
+
+// Upload
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (file) processXLSX(file);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) processXLSX(file);
+}
+
+function processXLSX(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const sheetName = EXCEL_MAP.sheet;
+      const ws = wb.Sheets[sheetName] || wb.Sheets[wb.SheetNames[0]];
+
+      function getCellVal(addr) {
+        const cell = ws[addr];
+        return cell ? cell.v : null;
+      }
+
+      const itEnergy = getCellVal(EXCEL_MAP.itEnergy);
+      const totalEnergy = getCellVal(EXCEL_MAP.totalEnergy);
+      const waterConsumed = getCellVal(EXCEL_MAP.waterConsumed);
+      const waterStress = getCellVal(EXCEL_MAP.waterStress);
+      const climateZone = getCellVal(EXCEL_MAP.climateZone);
+      const dcreLevel = getCellVal(EXCEL_MAP.dcreLevel);
+
+      // Switch to manual mode and populate
+      showCalcMode('manual', document.querySelectorAll('.calc-mode-tab')[0]);
+      document.querySelectorAll('.calc-mode-tab')[0].classList.add('active');
+      document.querySelectorAll('.calc-mode-tab')[1].classList.remove('active');
+      document.getElementById('calcMode-manual').classList.add('active');
+      document.getElementById('calcMode-upload').classList.remove('active');
+
+      function setVal(id, val, tagId) {
+        if (val !== null && val !== undefined) {
+          document.getElementById(id).value = val;
+          if (tagId) document.getElementById(tagId).innerHTML = '<span class="parsed-tag">✓ Parsed from Excel</span>';
+        }
+      }
+      setVal('calcITEnergy', itEnergy, 'itEnergyTag');
+      setVal('calcTotalEnergy', totalEnergy, 'totalEnergyTag');
+      setVal('calcWater', waterConsumed, 'waterTag');
+      if (waterStress !== null) { document.getElementById('calcWaterStress').value = Math.round(waterStress); document.getElementById('wsTag').innerHTML = '<span class="parsed-tag">✓ Parsed from Excel</span>'; }
+      if (climateZone !== null) { document.getElementById('calcClimate').value = Math.round(climateZone); document.getElementById('czTag').innerHTML = '<span class="parsed-tag">✓ Parsed from Excel</span>'; }
+      if (dcreLevel !== null) { document.getElementById('calcLevel').value = Math.round(dcreLevel); document.getElementById('levelTag').innerHTML = '<span class="parsed-tag">✓ Parsed from Excel</span>'; }
+
+      calcDCRE();
+      document.getElementById('uploadStatus').innerHTML = '<span style="color:var(--green); font-weight:700;">✓ Workbook parsed successfully. Values populated in Manual Entry mode.</span>';
+    } catch(err) {
+      document.getElementById('uploadStatus').innerHTML = '<span style="color:var(--red);">✗ Error parsing file. Please ensure it is a valid DCRE workbook.</span>';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+  const wsData = [
+    ['DCRE Calculation Workbook — MeitY Template v1.0'],
+    [],
+    ['Data Center Resource Effectiveness (DCRE) Metric Scoring Calculator'],
+    [],
+    ['Factor', 'Enter Data'],
+    ['Facility Energy Effectiveness (PUE format)', 1.2],
+    ['Water Usage (Site) — liters/kWh', 0.1],
+    ['Water Stress (WS) 0–5', 2],
+    ['DCRE Level (1–4)', 3],
+    ['Climate Zone (1–7)', 4],
+    [],
+    ['Instructions: Enter values in column B (yellow cells). Submit completed workbook via MeitY Data Centre portal.'],
+    [],
+    ['© 2024 Ministry of Electronics & Information Technology, Government of India — For official use under DCRE Scoring Framework v1.0']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [{wch:45},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws, 'DCRE-Tool-Ver.1');
+  const instData = [['Instructions'],['Enter data in the yellow cells in the DCRE-Tool-Ver.1 sheet.'],[''],['DCRE Level 1: FEE + WUE'],['DCRE Level 2: FEE + WUI (replaces WUE)'],['DCRE Level 3: Level 2 + Climate Zone factor'],['DCRE Level 4: Level 3 + Water Source factor']];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(instData), 'Instructions');
+  XLSX.writeFile(wb, 'DCRE_Blank_Template.xlsx');
+}
+
+// ============================================================
+// TAB 3 — MODELING (fixed IDs, animated dual gauge, real chart)
+// ============================================================
+const WS_LABELS = ['Low','Low-Medium','Medium-High','High','Very High','Extremely High'];
+const CZ_LABELS = ['','Very Hot/Humid','Hot/Dry','Warm','Mixed','Cool','Cold','Very Cold'];
+
+function populateModelFacility() {
+  const sel = document.getElementById('modelFacility');
+  sel.innerHTML = '<option value="">-- Select Facility --</option>';
+  facilities.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = f.id + ' -- ' + f.name;
+    sel.appendChild(opt);
+  });
+}
+
+function handleSlider() {
+  const ws = parseInt(document.getElementById('rngWaterStress').value);
+  const cz = parseInt(document.getElementById('rngClimate').value);
+  const it = parseInt(document.getElementById('rngIT').value);
+  const wc = parseInt(document.getElementById('rngWater').value);
+  document.getElementById('lblWS').textContent = ws + ' - ' + WS_LABELS[ws];
+  document.getElementById('lblCZ').textContent = cz + ' - ' + CZ_LABELS[cz];
+  document.getElementById('lblIT').textContent = it + '%';
+  document.getElementById('lblWC').textContent = wc + '%';
+}
+
+// Animated gauge target tracking
+let gaugeAnim = { curr: { from: 0, to: 0, val: 0 }, proj: { from: 0, to: 0, val: 0 }, raf: null };
+
+function updateModel() {
+  const fid = document.getElementById('modelFacility').value;
+  const f = facilities.find(x => x.id === fid);
+  if (!f) {
+    drawSingleGauge('gaugeCurrent', null);
+    drawSingleGauge('gaugeProjected', null);
+    return;
+  }
+
+  const ws  = parseInt(document.getElementById('rngWaterStress').value);
+  const cz  = parseInt(document.getElementById('rngClimate').value);
+  const itP = parseInt(document.getElementById('rngIT').value) / 100;
+  const wP  = parseInt(document.getElementById('rngWater').value) / 100;
+  const lv  = parseInt(document.getElementById('modelLevel').value);
+
+  const curr = computeDCRE(f);
+  const proj = computeDCRE(f, {
+    waterStress: ws, climate: cz,
+    itEnergy: f.itEnergy * itP,
+    totalEnergy: f.totalEnergy * itP,
+    water: f.water * wP,
+    level: lv
+  });
+
+  // Animate gauges
+  animateGauge('gaugeCurrent',  'gaugeCurrLabel', curr.score);
+  animateGauge('gaugeProjected','gaugeProjLabel', proj.score);
+
+  // Sub-component chart
+  drawDetailedCompChart(curr, proj, lv);
+
+  // Summary box
+  const currTier = getTier(curr.score);
+  const projTier = getTier(proj.score);
+  const delta = proj.score - curr.score;
+  const improving = delta < 0;
+
+  document.getElementById('scenarioSummaryBox').style.display = 'block';
+  document.getElementById('sumCurrScore').textContent = curr.score.toFixed(4);
+  document.getElementById('sumCurrScore').style.color = currTier.color;
+  document.getElementById('sumCurrTier').innerHTML = '<span class="badge ' + currTier.cls + '">' + currTier.sym + ' ' + currTier.label + '</span>';
+  document.getElementById('sumProjScore').textContent = proj.score.toFixed(4);
+  document.getElementById('sumProjScore').style.color = projTier.color;
+  document.getElementById('sumProjTier').innerHTML = '<span class="badge ' + projTier.cls + '">' + projTier.sym + ' ' + projTier.label + '</span>';
+
+  const arrow = improving ? '▼' : delta > 0.0001 ? '▲' : '—';
+  const dColor = improving ? '#1a6b3c' : delta > 0.0001 ? '#c0392b' : '#8896ab';
+  document.getElementById('sumDelta').innerHTML =
+    '<span style="color:' + dColor + '">' + arrow + ' ' + Math.abs(delta).toFixed(4) + ' pts</span>' +
+    (currTier.label !== projTier.label ? '  &nbsp;  Tier: <strong>' + currTier.label + '</strong> &rarr; <strong style="color:' + projTier.color + '">' + projTier.label + '</strong>' : '  &nbsp;  No tier change');
+}
+
+function animateGauge(canvasId, labelId, targetScore) {
+  const key = canvasId;
+  if (!gaugeAnim[key]) gaugeAnim[key] = { current: 1.0 };
+  const startVal = gaugeAnim[key].current || 1.0;
+  const startTime = performance.now();
+  const duration = 400;
+
+  if (gaugeAnim[key].raf) cancelAnimationFrame(gaugeAnim[key].raf);
+
+  function step(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = startVal + (targetScore - startVal) * eased;
+    drawSingleGauge(canvasId, val);
+    if (t < 1) {
+      gaugeAnim[key].raf = requestAnimationFrame(step);
+    } else {
+      gaugeAnim[key].current = targetScore;
+      drawSingleGauge(canvasId, targetScore);
+    }
+  }
+  gaugeAnim[key].raf = requestAnimationFrame(step);
+
+  const tier = getTier(targetScore);
+  document.getElementById(labelId).innerHTML =
+    '<span class="badge ' + tier.cls + '" style="font-size:11px">' + tier.sym + ' ' + tier.label + ' &nbsp; ' + targetScore.toFixed(4) + '</span>';
+}
+
+function drawSingleGauge(canvasId, score) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H - 10, r = Math.min(W, H * 2) * 0.42;
+  const startA = Math.PI, endA = 2 * Math.PI;
+
+  // Tier band background arcs
+  const bands = [
+    { from: 1.0, to: 1.20, color: '#d0d8ed' },
+    { from: 1.20, to: 1.40, color: '#f5ead0' },
+    { from: 1.40, to: 1.60, color: '#e8eaec' },
+    { from: 1.60, to: 2.00, color: '#f5ddd9' }
+  ];
+  bands.forEach(b => {
+    const a1 = startA + ((b.from - 1.0) / 1.0) * Math.PI;
+    const a2 = startA + ((b.to   - 1.0) / 1.0) * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, a1, a2);
+    ctx.lineWidth = 22;
+    ctx.strokeStyle = b.color;
+    ctx.stroke();
+  });
+
+  // Tick marks at tier boundaries
+  [1.20, 1.40, 1.60].forEach(v => {
+    const a = startA + ((v - 1.0) / 1.0) * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx + (r-14)*Math.cos(a), cy + (r-14)*Math.sin(a));
+    ctx.lineTo(cx + (r+2)*Math.cos(a),  cy + (r+2)*Math.sin(a));
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#8896ab';
+    ctx.stroke();
+  });
+
+  if (score === null) return;
+
+  const pct = Math.min(1, Math.max(0, (score - 1.0) / 1.0));
+  const needleA = startA + pct * Math.PI;
+  const color = score <= 1.20 ? '#1a2744' : score <= 1.40 ? '#b8860b' : score <= 1.60 ? '#708090' : '#c0392b';
+
+  // Filled arc up to score
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, needleA);
+  ctx.lineWidth = 22;
+  ctx.strokeStyle = color;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  // Needle
+  ctx.beginPath();
+  ctx.moveTo(cx + 8*Math.cos(needleA + Math.PI/2), cy + 8*Math.sin(needleA + Math.PI/2));
+  ctx.lineTo(cx + (r - 4)*Math.cos(needleA),       cy + (r - 4)*Math.sin(needleA));
+  ctx.lineTo(cx + 8*Math.cos(needleA - Math.PI/2), cy + 8*Math.sin(needleA - Math.PI/2));
+  ctx.closePath();
+  ctx.fillStyle = '#1a2744';
+  ctx.fill();
+
+  // Center hub
+  ctx.beginPath();
+  ctx.arc(cx, cy, 7, 0, 2*Math.PI);
+  ctx.fillStyle = '#1a2744';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, 2*Math.PI);
+  ctx.fillStyle = '#FF9933';
+  ctx.fill();
+
+  // Outer labels
+  ctx.fillStyle = '#8896ab';
+  ctx.font = '10px Source Sans 3, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('1.0', cx - r - 4, cy + 14);
+  ctx.textAlign = 'left';
+  ctx.fillText('2.0', cx + r + 4, cy + 14);
+  ctx.textAlign = 'center';
+  ctx.fillText('1.2', cx - r*0.71 - 2, cy - r*0.71 + 2);
+  ctx.fillText('1.4', cx, cy - r - 6);
+  ctx.fillText('1.6', cx + r*0.71 + 2, cy - r*0.71 + 2);
+}
+
+function drawDetailedCompChart(curr, proj, level) {
+  const container = document.getElementById('compChartDetailed');
+
+  const components = [
+    {
+      label: 'Facility Energy Effectiveness (FEE)',
+      desc: 'Total Facility Energy / IT Energy',
+      curr: curr.fee,
+      proj: proj.fee,
+      unit: '',
+      fmt: v => v.toFixed(4)
+    },
+    {
+      label: (level <= 1 ? 'WUE' : 'WUI') + ' — Water Impact Factor',
+      desc: level <= 1 ? 'Water Consumed / IT Energy' : 'WUE × (Water Stress + 1)',
+      curr: Math.min(curr.waterFactor, 4),
+      proj: Math.min(proj.waterFactor, 4),
+      unit: ' L/kWh',
+      fmt: v => v.toFixed(4)
+    },
+    {
+      label: 'Climate Zone Factor',
+      desc: 'Heat rejection difficulty multiplier',
+      curr: curr.czFactor,
+      proj: proj.czFactor,
+      unit: '',
+      fmt: v => v.toFixed(2)
+    },
+    {
+      label: 'DCRE Score (composite)',
+      desc: 'FEE × (1 + water×0.2)' + (level >= 3 ? ' × CZ' : ''),
+      curr: curr.score,
+      proj: proj.score,
+      unit: '',
+      fmt: v => v.toFixed(4),
+      highlight: true
+    }
+  ];
+
+  const maxVal = Math.max(...components.map(c => Math.max(c.curr, c.proj))) * 1.05;
+
+  container.innerHTML = components.map(c => {
+    const currW = Math.min(99, (c.curr / maxVal) * 100);
+    const projW = Math.min(99, (c.proj / maxVal) * 100);
+    const delta = c.proj - c.curr;
+    const dColor = delta < -0.0001 ? '#1a6b3c' : delta > 0.0001 ? '#c0392b' : '#8896ab';
+    const dText = (delta >= 0 ? '+' : '') + delta.toFixed(4);
+    const bg = c.highlight ? 'background:#f0f4fa; padding:10px 8px; border:1px solid #dce3ef; margin-bottom:4px;' : 'margin-bottom:12px;';
+
+    return `<div style="${bg}">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px;">
+        <div>
+          <div style="font-size:${c.highlight?'13px':'12px'}; font-weight:${c.highlight?700:600}; color:var(--navy);">${c.label}</div>
+          <div style="font-size:10px; color:#8896ab;">${c.desc}</div>
+        </div>
+        <div style="font-size:12px; font-weight:700; color:${dColor}; margin-left:12px; white-space:nowrap;">${dText}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:60px 1fr 58px; align-items:center; gap:6px; margin-bottom:3px;">
+        <div style="font-size:10px; color:#8896ab; text-align:right;">Current</div>
+        <div style="height:18px; background:#e8ecf4; position:relative; overflow:hidden;">
+          <div style="width:${currW}%; height:100%; background:var(--navy); position:absolute; top:0; left:0; transition:width 0.35s ease;"></div>
+        </div>
+        <div style="font-size:11px; font-weight:700; color:var(--navy);">${c.fmt(c.curr)}${c.unit}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:60px 1fr 58px; align-items:center; gap:6px;">
+        <div style="font-size:10px; color:#8896ab; text-align:right;">Projected</div>
+        <div style="height:18px; background:#e8ecf4; position:relative; overflow:hidden;">
+          <div style="width:${projW}%; height:100%; background:#FF9933; position:absolute; top:0; left:0; transition:width 0.35s ease;"></div>
+        </div>
+        <div style="font-size:11px; font-weight:700; color:#FF9933;">${c.fmt(c.proj)}${c.unit}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// TAB 4 — REPORTS
+// ============================================================
+function populateReportSelect() {
+  const sel = document.getElementById('reportFacility');
+  sel.innerHTML = '';
+  facilities.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = `${f.id} — ${f.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+function generateReport() {
+  const fid = document.getElementById('reportFacility').value;
+  const f = facilities.find(x => x.id === fid);
+  if (!f) return;
+  const r = computeDCRE(f);
+  const tier = getTier(r.score);
+  const now = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  document.getElementById('reportOutput').innerHTML = `
+    <div class="print-report" style="border:1px solid var(--gray-border);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#8896ab; margin-bottom:4px;">Ministry of Electronics &amp; Information Technology · Government of India</div>
+          <div class="report-title">DCRE Compliance Report — ${f.name}</div>
+        </div>
+        <span class="badge ${tier.cls}" style="font-size:13px; padding:8px 16px;">${tier.sym} ${tier.label}</span>
+      </div>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+        <tr style="background:#f8f9fb;"><th colspan="4" style="padding:8px 12px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; border:1px solid #ddd;">Facility Profile</th></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; width:25%; color:#6b7ea0; font-size:12px;">Facility ID</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">${f.id}</td>
+            <td style="padding:6px 12px; border:1px solid #ddd; width:25%; color:#6b7ea0; font-size:12px;">Country/Region</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">${f.country}</td></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; color:#6b7ea0; font-size:12px;">Climate Zone</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">Zone ${f.climate}</td>
+            <td style="padding:6px 12px; border:1px solid #ddd; color:#6b7ea0; font-size:12px;">Water Stress</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">${f.waterStress}/5</td></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; color:#6b7ea0; font-size:12px;">DCRE Level</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">Level ${f.level}</td>
+            <td style="padding:6px 12px; border:1px solid #ddd; color:#6b7ea0; font-size:12px;">Report Date</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px;">${now}</td></tr>
+      </table>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+        <tr style="background:#f8f9fb;"><th colspan="2" style="padding:8px 12px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; border:1px solid #ddd;">DCRE Sub-Scores</th></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; color:#6b7ea0;">Facility Energy Effectiveness (FEE)</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; font-weight:700;">${r.fee.toFixed(4)}</td></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; color:#6b7ea0;">${r.waterLabel} (Water Impact Factor)</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; font-weight:700;">${r.waterFactor.toFixed(4)}</td></tr>
+        <tr><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; color:#6b7ea0;">Climate Zone Factor (Zone ${f.climate})</td><td style="padding:6px 12px; border:1px solid #ddd; font-size:12px; font-weight:700;">${r.czFactor.toFixed(2)}</td></tr>
+        <tr style="background:#1a2744; color:white;"><td style="padding:10px 12px; font-size:14px; font-weight:700;">DCRE SCORE</td><td style="padding:10px 12px; font-size:20px; font-weight:700; font-family:'Source Serif 4',serif;">${r.score.toFixed(4)}</td></tr>
+      </table>
+      <div style="font-size:11px; color:#8896ab; border-top:1px solid #ddd; padding-top:10px;">
+        <strong>Methodology:</strong> DCRE = FEE × (1 + ${r.waterLabel} × 0.2)${f.level >= 3 ? ' × CZ_Factor' : ''} &nbsp;|&nbsp;
+        <strong>Document Ref:</strong> MeitY-DCRE-METH-2024-001 v1.0 &nbsp;|&nbsp;
+        <strong>Issuing Authority:</strong> Ministry of Electronics &amp; Information Technology, Government of India &nbsp;|&nbsp;
+        <strong>Generated:</strong> ${now} &nbsp;|&nbsp; This report is for informational purposes. Official certifications require third-party verification under MeitY guidelines.
+      </div>
+    </div>
+  `;
+}
+
+function buildSummaryStats() {
+  const all = facilities.map(f => ({ ...f, ...computeDCRE(f) }));
+  const avgScore = all.reduce((s,f) => s + f.score, 0) / all.length;
+  const best = all.reduce((a,b) => a.score < b.score ? a : b);
+  const worst = all.reduce((a,b) => a.score > b.score ? a : b);
+
+  // By climate zone
+  const czGroups = {};
+  all.forEach(f => { if (!czGroups[f.climate]) czGroups[f.climate] = []; czGroups[f.climate].push(f.score); });
+
+  // By water stress
+  const wsGroups = {};
+  all.forEach(f => { if (!wsGroups[f.waterStress]) wsGroups[f.waterStress] = []; wsGroups[f.waterStress].push(f.score); });
+
+  const tierCounts = { Platinum:0, Gold:0, Silver:0, 'Red-Flagged':0 };
+  all.forEach(f => { tierCounts[getTier(f.score).label]++; });
+
+  const barHTML = (val, max, color) => `<div style="height:16px; background:#e8ecf4; width:100%; position:relative; margin-bottom:4px;"><div style="width:${Math.min(100, val/max*100)}%; height:100%; background:${color}; position:absolute;"></div></div>`;
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stats-grid">
+      <div class="stats-card">
+        <h4>Registry Overview</h4>
+        <table style="width:100%; font-size:12px;">
+          <tr><td style="padding:4px 0; color:#6b7ea0;">Total Facilities</td><td style="font-weight:700;">${all.length}</td></tr>
+          <tr><td style="padding:4px 0; color:#6b7ea0;">National Avg DCRE (India)</td><td style="font-weight:700; font-family:'Source Serif 4',serif; font-size:15px;">${avgScore.toFixed(4)}</td></tr>
+          <tr><td style="padding:4px 0; color:#6b7ea0;">Best Performer</td><td style="font-weight:700; color:var(--platinum);">${best.name} (${best.score.toFixed(4)})</td></tr>
+          <tr><td style="padding:4px 0; color:#6b7ea0;">Worst Performer</td><td style="font-weight:700; color:var(--red);">${worst.name} (${worst.score.toFixed(4)})</td></tr>
+        </table>
+        <div style="margin-top:14px;">
+          <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; color:#8896ab;">Tier Distribution</div>
+          ${Object.entries(tierCounts).map(([t,c]) => `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <div style="width:90px; font-size:11px; color:#6b7ea0;">${t}</div>
+              <div style="flex:1; height:14px; background:#e8ecf4; position:relative;">
+                <div style="width:${c/all.length*100}%; height:100%; background:${t==='Platinum'?'#1a2744':t==='Gold'?'#b8860b':t==='Silver'?'#708090':'#c0392b'}; position:absolute;"></div>
+              </div>
+              <div style="width:30px; font-size:12px; font-weight:700; text-align:right;">${c}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="stats-card">
+        <h4>Average DCRE by Climate Zone</h4>
+        ${Object.entries(czGroups).sort((a,b)=>a[0]-b[0]).map(([cz,scores]) => {
+          const avg = scores.reduce((s,v)=>s+v,0)/scores.length;
+          return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <div style="width:55px; font-size:11px; color:#6b7ea0;">Zone ${cz}</div>
+            <div style="flex:1; height:16px; background:#e8ecf4; position:relative;">
+              <div style="width:${Math.min(100,(avg-1)/1.0*100)}%; height:100%; background:var(--navy); position:absolute;"></div>
+            </div>
+            <div style="width:50px; font-size:11px; font-weight:700; text-align:right;">${avg.toFixed(3)}</div>
+          </div>`;
+        }).join('')}
+        <h4 style="margin-top:16px;">Average DCRE by Water Stress</h4>
+        ${Object.entries(wsGroups).sort((a,b)=>a[0]-b[0]).map(([ws,scores]) => {
+          const avg = scores.reduce((s,v)=>s+v,0)/scores.length;
+          return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <div style="width:55px; font-size:11px; color:#6b7ea0;">WS ${ws}</div>
+            <div style="flex:1; height:16px; background:#e8ecf4; position:relative;">
+              <div style="width:${Math.min(100,(avg-1)/1.0*100)}%; height:100%; background:#c0392b; position:absolute;"></div>
+            </div>
+            <div style="width:50px; font-size:11px; font-weight:700; text-align:right;">${avg.toFixed(3)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// ACCORDION
+// ============================================================
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  renderTable();
+  populateReportSelect();
+  populateModelFacility();
+  drawSingleGauge('gaugeCurrent', null);
+  drawSingleGauge('gaugeProjected', null);
+});
+</script>
+<!-- FOOTER -->
+<footer style="background:var(--navy-dark); color:#6b7ea0; padding:24px 0; margin-top:40px; border-top:3px solid #0f1e38;">
+  <div style="max-width:1280px; margin:0 auto; padding:0 24px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px; margin-bottom:20px;">
+      <div>
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a0aec0; margin-bottom:8px;">Issuing Authority</div>
+        <div style="font-size:12px; line-height:1.6;">Ministry of Electronics &amp; Information Technology<br>Government of India<br>Electronics Niketan, 6 CGO Complex<br>New Delhi – 110003</div>
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a0aec0; margin-bottom:8px;">Related Portals</div>
+        <div style="font-size:12px; line-height:1.8;">
+          <a href="#" style="color:#6b7ea0; text-decoration:none; display:block; hover:color:#fff">meity.gov.in</a>
+          <a href="#" style="color:#6b7ea0; text-decoration:none; display:block;">india.gov.in</a>
+          <a href="#" style="color:#6b7ea0; text-decoration:none; display:block;">digitalindia.gov.in</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#a0aec0; margin-bottom:8px;">Document Reference</div>
+        <div style="font-size:12px; line-height:1.6;">Registry ID: MeitY-DCRE-2024<br>Framework Version: 1.0<br>Last Updated: March 2025<br>Next Review: March 2026</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #1a2744; padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div style="font-size:11px;">© 2024 Ministry of Electronics &amp; Information Technology, Government of India. Content on this website is published and managed by MeitY. &nbsp;|&nbsp; <a href="#" style="color:#6b7ea0;">Terms of Use</a> &nbsp;|&nbsp; <a href="#" style="color:#6b7ea0;">Privacy Policy</a> &nbsp;|&nbsp; <a href="#" style="color:#6b7ea0;">Sitemap</a></div>
+      <div style="display:flex; gap:0; height:18px; border-radius:2px; overflow:hidden;">
+        <div style="width:30px; background:#FF9933;"></div>
+        <div style="width:30px; background:#ffffff; display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; border:1.5px solid #000080;"></div>
+        </div>
+        <div style="width:30px; background:#138808;"></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
